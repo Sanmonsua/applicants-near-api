@@ -4,6 +4,31 @@ const { Schema } = mongoose;
 
 mongoose.Promise = global.Promise;
 
+const ReferencesSchema = new Schema(
+    {
+      contactName: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+      company: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+      comment: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+      signerAddress: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+    }
+  );
+
 const ApplicantsSchema = new Schema(
   {
     email: {
@@ -26,6 +51,9 @@ const ApplicantsSchema = new Schema(
       required: false,
       trim: true,
     },
+    references: [
+      ReferencesSchema,
+    ],
   },
   { timestamps: true }
 );
