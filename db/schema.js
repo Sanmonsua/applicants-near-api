@@ -10,9 +10,19 @@ const typeDefs = gql`
     firstName: String
     lastName: String
     phone: String
-    references: [Reference]
     createdAt: Date
     updatedAt: Date
+  }
+
+  type ApplicantDetails {
+    id: ID
+    email: String
+    firstName: String
+    lastName: String
+    phone: String
+    createdAt: Date
+    updatedAt: Date
+    references: [Reference]
   }
 
   input ApplicantInput {
@@ -29,8 +39,6 @@ const typeDefs = gql`
     company: String
     comment: String
     signerAddress: String
-    createdAt: Date
-    updatedAt: Date
   }
 
   input ReferenceInput {
@@ -43,7 +51,7 @@ const typeDefs = gql`
 
   type Query {
     getApplicants: [Applicant]
-    getApplicant(id: ID!): Applicant
+    getApplicantDetails(id: ID!): ApplicantDetails
   }
 
   type Mutation {

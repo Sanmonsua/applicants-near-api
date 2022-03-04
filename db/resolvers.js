@@ -1,6 +1,7 @@
 const { GraphQLScalarType, Kind } = require("graphql");
 
 const Applicant = require("./models/applicant");
+const ApplicantsContract = require("../near/contract")
 
 const dateScalar = new GraphQLScalarType({
   name: "Date",
@@ -25,22 +26,23 @@ const resolvers = {
     getApplicants: async () => {
       try {
         const applicants = await Applicant.find({});
-        console.log(applicants[0].references)
-
-        return applicants;
+        return applicants
       } catch (err) {
         console.log(err);
         return [];
       }
     },
-    getApplicant: async (_, { id }) => {
+    getApplicantDetails: async (_, { id }) => {
       const applicant = await Applicant.findById(id);
 
       if (!applicant) {
         throw new Error("Applicant not found");
       }
 
-      return applicant;
+      const response = await ApplicantsContract.getApplicantReferences(applicant.id);
+      const applicantWithReferences = {  id: applicant.id, ...applicant.toObject(), references: response };
+
+      return applicantWithReferences;
     },
   },
 
@@ -65,17 +67,17 @@ const resolvers = {
 
       return applicant;
     },
-    createReference: async (_, { input: { applicantId, ...input } }) => {
+    createReference: async (_, { input: { applicantId, contactName, company, comment } }) => {
       const applicant = await Applicant.findById(applicantId);
 
       if (!applicant) {
         throw new Error("Applicant not found");
       }
 
-      applicant.references.push(input);
-      applicant.save();
+      await ApplicantsContract.addReference(applicantId, contactName, company, comment);
+      const response = await ApplicantsContract.getApplicantReferences(applicantId);
 
-      return applicant.references;
+      return response;
     },
   },
 };
